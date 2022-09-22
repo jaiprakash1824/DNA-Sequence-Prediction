@@ -8,11 +8,12 @@ import pickle
 from torch.utils.data import DataLoader
 
 class DNASeqDataset(pl.LightningDataModule):
-    def __init__(self, datapath = 'data/deepspeech.csv'):
+    def __init__(self, datapath = 'data/deepspeech.csv', device='cpu'):
         super().__init__()
         self.datapath = datapath
         self.signal_path = 'data/padded_signals'
         self.transcript_path = 'data/padded_transcripts'
+        self.device = device 
 
 
     def setup(self, stage: Optional[str] = None) -> None:
@@ -23,10 +24,16 @@ class DNASeqDataset(pl.LightningDataModule):
         self.padded_signal = torch.load(self.signal_path)
         self.transcription = torch.load(self.transcript_path)
 
+        self.padded_signal = self.padded_signal.to(torch.long).to(self.device)
+        self.transcription = self.transcription.to(torch.long).to(self.device)
+        
+
         with open('data/val2id.pkl', 'rb') as f:
             self.val2id = pickle.load(f)
+            print(len(self.val2id.keys()))
         with open('data/t2id.pkl', 'rb') as f:
             self.t2id = pickle.load(f)
+            print(len(self.t2id.keys()))
 
         self.data = [(signal, transcript) for signal, transcript in zip(self.padded_signal, self.transcription)]
     
@@ -43,4 +50,6 @@ if __name__ == '__main__':
     dna_seq_dataset = DNASeqDataset()
     dna_seq_dataset.prepare_data()
     trainloader = dna_seq_dataset.train_dataloader()
+    src, tgt = iter(trainloader).next()
+    print(src.size(), tgt.size())
     print(iter(trainloader).next())

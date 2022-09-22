@@ -144,5 +144,5 @@ for epoch in tqdm(range(N_EPOCHS)):
         torch.save(model.state_dict(), 'tut5-model.pt')
     
     print(f'Epoch: {epoch+1:02} ')
-    print(f'\tTrain Loss: {train_loss:.3f} | Train PPL: {math.exp(train_loss):7.3f}')
-    print(f'\t Val. Loss: {valid_loss:.3f} |  Val. PPL: {math.exp(valid_loss):7.3f}')
+    print(f'\tTrain Loss: {train_loss:.3f} ')
+    print(f'\t Val. Loss: {valid_loss:.3f} ')
